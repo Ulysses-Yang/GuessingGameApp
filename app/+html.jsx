@@ -12,7 +12,7 @@ export default function Root({ children }) {
           name="viewport"
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
-        <meta name="theme-color" content="#00FF00" />
+        <meta name="theme-color" content="#65ba75" />
         <link rel="manifest" href="/manifest.json" />
 
         <link
