@@ -1,177 +1,96 @@
-import { useRef, useState } from 'react';
-import {
-  Alert,
-  Button,
-  FlatList,
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
-import GuessNumberGame from '../utils/GameLogic';
+//index.jsx
+import { Stack, useRouter } from 'expo-router';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function GameScreen() {
-  const gameRef = useRef(new GuessNumberGame());
-  const [inputValue, setInputValue] = useState('');
-  const [history, setHistory] = useState([]);
-  const [isGameOver, setIsGameOver] = useState(false);
-  const [finalMessage, setFinalMessage] = useState('');
-
-  const handleGuess = () => {
-    const result = gameRef.current.makeGuess(inputValue);
-    if (result.error) {
-      Alert.alert('輸入錯誤', result.error);
-    } else {
-      setHistory([...gameRef.current.guessHistory]);
-      if (result.isCorrect) {
-        setIsGameOver(true);
-        setFinalMessage(
-          `恭喜！答案是 ${result.guess}！\n` +
-          `您一共猜了 ${gameRef.current.guessHistory.length} 次。\n` +
-          `總耗時：${gameRef.current.getDuration()}\n` +
-          `最終得分：${gameRef.current.score}`
-        );
-      }
-    }
-    setInputValue('');
-  };
-
-  const handleRestart = () => {
-    gameRef.current.startGame();
-    setHistory([]);
-    setIsGameOver(false);
-    setFinalMessage('');
-    setInputValue('');
-  };
+export default function Home() {
+  const router = useRouter();
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardAvoiding}
-      >
-        <ScrollView
-          contentContainerStyle={styles.scrollContainer}
-          keyboardShouldPersistTaps="handled"
-        >
-          <Text style={styles.title}>猜數字遊戲</Text>
+    <>
+      <Stack.Screen
+        options={{
+          headerTransparent: true,
+          title: '',
+        }}
+      />
+      <View style={styles.container}>
+        <View style={styles.title}>
+          <Text style={styles.titleText}>益智小遊戲</Text>
+          <Text style={styles.versionText}>版本1.3.0</Text>
+        </View>
 
-          {/* 歷史紀錄 */}
-          {history.length > 0 && (
-            <FlatList
-              style={styles.historyList}
-              data={history}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => (
-                <View style={styles.historyItemContainer}>
-                  <Text style={styles.historyItem}>{item.guess}</Text>
-                  <Text style={styles.historyItem}>{"=>"}</Text>
-                  <Text style={styles.historyItem}>{item.result}</Text>
-                </View>
-              )}
-              inverted
-              ListEmptyComponent={<Text style={styles.emptyHistoryText}>請開始你的第一次猜測！</Text>}
-            />
-          )}
-
-          {/* 遊戲控制區 */}
-          {isGameOver ? (
-            <View style={styles.resultsContainer}>
-              <Text style={styles.finalMessage}>{finalMessage}</Text>
-              <Button title="重新開始" onPress={handleRestart} />
+        {/* 自定義按鈕 */}
+        <View style={{ alignItems: 'flex-start', marginLeft: 20 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 100 }}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => router.push('/GuessingGame/ModeSelect')} // 修改這裡
+          >
+            <Text style={styles.buttonText}>猜數字</Text>
+          </TouchableOpacity>
+          <View style={{ marginLeft: 12, flexShrink: 1 }}>
+            <Text style= {{color:'black', fontSize: 18, fontWeight: 'bold'}}>三位數or四位數</Text>
+          </View>
+        </View>
+          <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => router.push('/wordle/StartScreen')}
+            >
+              <Text style={styles.buttonText}>猜單字</Text>
+            </TouchableOpacity>
+            <View style={{ marginLeft: 12, flexShrink: 1 }}>
+              <Text style={{ color: 'black', fontSize: 18, fontWeight: 'bold' }}>
+                參考 Josh Wardle 的遊戲：Wordle
+              </Text>
             </View>
-          ) : (
-            <View style={styles.gameContainer}>
-              <TextInput
-                style={styles.input}
-                placeholder="請輸入四位不重複數字"
-                keyboardType="number-pad"
-                maxLength={4}
-                value={inputValue}
-                onChangeText={setInputValue}
-              />
-              <Button title="猜!" onPress={handleGuess} />
-            </View>
-          )}
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+          </View>
+        </View>
+        
+      </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
+  container: {
+    backgroundColor: '#e1f6c9ff',
     flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  keyboardAvoiding: {
-    flex: 1,
-  },
-  scrollContainer: {
-    flexGrow: 1,
     justifyContent: 'flex-start',
+    alignItems: 'center', // 讓按鈕水平置中
     paddingHorizontal: 20,
-    paddingBottom: 20,
   },
+
   title: {
+    marginTop: 100,
+    marginBottom: 100,
+    alignItems: 'center',
+  },
+
+  titleText: {
     fontSize: 28,
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  historyList: {
-    width: '100%',
-    marginBottom: 20,
-  },
-  gameContainer: {
-    width: '100%',
-    alignItems: 'center',
-  },
-  resultsContainer: {
-    width: '100%',
-    alignItems: 'center',
-  },
-  input: {
-    width: '90%',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    backgroundColor: 'white',
-    padding: 12,
     marginBottom: 10,
-    textAlign: 'center',
-    fontSize: 18,
-    borderRadius: 8,
   },
-  historyItemContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 12,
-    backgroundColor: 'white',
-    borderRadius: 5,
-    marginBottom: 8,
+  versionText: {
+    fontSize: 15,
   },
-  historyItem: {
-    fontSize: 18,
-    fontFamily: 'monospace',
+
+  button: {
+    backgroundColor: '#225eadff',      // ✅ 背景色
+    paddingVertical: 12,             // 垂直內距
+    paddingHorizontal: 30,           // 水平內距
+    borderRadius: 8,                 // 圓角
+    elevation: 3,                    // 陰影（Android）
+    shadowColor: '#000',             // 陰影（iOS）
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
-  finalMessage: {
-    fontSize: 18,
-    textAlign: 'center',
-    lineHeight: 30,
-    padding: 15,
-    backgroundColor: '#e6f7ff',
-    borderColor: '#91d5ff',
-    borderWidth: 1,
-    borderRadius: 8,
-  },
-  emptyHistoryText: {
-    textAlign: 'center',
-    color: '#888',
-    marginTop: 50,
+  buttonText: {
+    color: 'white',                  // ✅ 文字顏色
     fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });

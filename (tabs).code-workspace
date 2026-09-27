@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"name": "(tabs)",
+			"path": "../my-new-app/app/(tabs)"
+		},
+		{
+			"name": "my-awesome-app",
+			"path": "../my-awesome-app"
+		},
+		{
+			"name": "GuessingGameApp",
+			"path": "."
+		},
+		{
+			"name": "my-new-app",
+			"path": "../my-new-app"
+		}
+	]
+}
